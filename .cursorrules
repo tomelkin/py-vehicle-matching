@@ -1,0 +1,41 @@
+## Code Style & Standards
+
+### Python Style
+- Write idiomatic Python code
+- Follow PEP 8 conventions
+- Use type hints for all function parameters and return values
+- Use descriptive variable and function names
+- Maximum line length: 88 characters (Black formatter standard)
+- Use f-strings for string formatting
+
+### Documentation
+- All classes and public methods must have docstrings
+- Use Google-style docstrings with Args, Returns, and Raises sections
+- Include examples in docstrings for complex functions
+
+### Error Handling
+- Use specific exception types rather than generic Exception
+- Always provide meaningful error messages
+- Handle database connection errors gracefully
+- Log errors with appropriate context
+
+## Testing Guidelines
+
+### Test Structure
+- Use pytest as the testing framework
+- Organize tests in classes that mirror the main code structure
+- Use descriptive test method names that explain what is being tested
+- Follow the AAA pattern: Arrange, Act, Assert
+
+### Mocking
+- Mock external dependencies (database connections, file operations)
+- Always verify that mocks are called correctly
+- Test both success and failure scenarios
+
+## Database Interactions
+
+### Query Guidelines
+- Use parameterized queries to prevent SQL injection
+- Handle database connection errors gracefully
+- Always close database connections in finally blocks or use context managers
+- Prefer ILIKE for case-insensitive string matching
