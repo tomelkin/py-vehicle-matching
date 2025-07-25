@@ -3,6 +3,7 @@ Vehicle matching functionality using VehicleAttributes and database queries.
 """
 
 from typing import List
+from thefuzz import fuzz
 from vehicle import Vehicle
 from vehicle_attributes import VehicleAttributes
 from db_client import DatabaseClient
@@ -25,35 +26,26 @@ class VehicleMatcher:
     
     def find_matching_vehicles(self, description: str) -> List[Vehicle]:
         """
-        Find vehicles that match the given description.
+        Find vehicles that match the given description, scored and sorted by fuzzy matching.
         
         Args:
             description: String describing the vehicle (e.g., 'Toyota Camry Automatic')
             
         Returns:
-            List of Vehicle objects that match the description attributes
-            
-        Example:
-            >>> matcher = VehicleMatcher(db_client)
-            >>> vehicles = matcher.find_matching_vehicles('Toyota Camry Automatic')
-            >>> print(f"Found {len(vehicles)} vehicles")
+            List of Vehicle objects that match the description attributes, 
+            sorted by fuzzy matching score (highest to lowest)
         """
-        # Extract attributes from the description
         matched_attributes = self.vehicle_attributes.find_matching_attributes(description)
         
-        # If no attributes matched, return empty list
         if not matched_attributes:
             return []
         
-        # Build SQL query conditions
+        # Construct the SQL query
         conditions = []
         params = []
-        
         for attribute_name, attribute_value in matched_attributes.items():
             conditions.append(f"{attribute_name} = %s")
             params.append(attribute_value)
-        
-        # Construct the SQL query
         where_clause = " AND ".join(conditions)
         sql = f"""
         SELECT id, make, model, badge, transmission_type, fuel_type, drive_type
@@ -62,19 +54,19 @@ class VehicleMatcher:
         """
         
         try:
-            # Execute the query
+            # Execute query
             results = self.db_client.query(sql, tuple(params))
             
-            # Convert database rows to Vehicle objects
-            vehicles = []
-            for row in results:
-                # Create vehicle from database row
-                vehicle = Vehicle.from_db_row(row)
-                vehicles.append(vehicle)
+            vehicles = [Vehicle.from_db_row(row) for row in results]
             
-            return vehicles
+            # Score each vehicle using fuzzy matching
+            vehicle_scores = [(vehicle, fuzz.token_set_ratio(description, vehicle.get_description())) 
+                            for vehicle in vehicles]
+            
+            # Sort by score descending and return vehicles
+            vehicle_scores.sort(key=lambda x: x[1], reverse=True)
+            return [vehicle for vehicle, score in vehicle_scores]
             
         except Exception as e:
-            # Log error and return empty list for graceful degradation
             print(f"Database error in find_matching_vehicles: {e}")
             return [] 
