@@ -45,21 +45,17 @@ def process_vehicle_descriptions(filename: str) -> None:
             print("-" * 60)
             
             try:
-                # Find matching vehicles
-                vehicles = matcher.find_matching_vehicles(description)
+                # Find best matching vehicle and confidence score
+                vehicle, score = matcher.find_best_matching_vehicle(description)
                 
-                if vehicles:
-                    print(f"✅ Found {len(vehicles)} matching vehicle(s):")
-                    print()
-                    
-                    for j, vehicle in enumerate(vehicles, 1):
-                        print(f"  {j}. {vehicle.make} {vehicle.model} {vehicle.badge}")
-                        print(f"     Transmission: {vehicle.transmission_type}")
-                        print(f"     Fuel Type: {vehicle.fuel_type}")
-                        print(f"     Drive Type: {vehicle.drive_type}")
-                        print(f"     Vehicle ID: {vehicle.id}")
-                        if j < len(vehicles):  # Add spacing between vehicles
-                            print()
+                if vehicle:
+                    print(f"  Matched vehicle with confidence score: {score}")
+                    print(f"  {vehicle.make} {vehicle.model} {vehicle.badge}")
+                    print(f"     Transmission: {vehicle.transmission_type}")
+                    print(f"     Fuel Type: {vehicle.fuel_type}")
+                    print(f"     Drive Type: {vehicle.drive_type}")
+                    print(f"     Vehicle ID: {vehicle.id}")
+                    print(f"     Listings Available: {vehicle.listing_count}")
                 else:
                     print("❌ No matching vehicles found")
                     

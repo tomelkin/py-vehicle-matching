@@ -39,8 +39,8 @@ class TestVehicleAttributes:
         # Should find both make and model
         assert 'make' in result
         assert 'model' in result
-        assert result['make'] == 'Toyota'
-        assert result['model'] == 'Camry'
+        assert result['make'] == ['Toyota']
+        assert result['model'] == ['Camry']
     
     def test_find_matching_attributes_case_insensitive(self, vehicle_attributes):
         """Test that matching is case insensitive."""
@@ -49,9 +49,9 @@ class TestVehicleAttributes:
         assert 'make' in result
         assert 'model' in result
         assert 'transmission_type' in result
-        assert result['make'] == 'Toyota'
-        assert result['model'] == 'Camry'
-        assert result['transmission_type'] == 'Manual'
+        assert result['make'] == ['Toyota']
+        assert result['model'] == ['Camry']
+        assert result['transmission_type'] == ['Manual']
     
     def test_find_matching_attributes_partial_string_match(self, vehicle_attributes):
         """Test that partial string matching works."""
@@ -60,9 +60,9 @@ class TestVehicleAttributes:
         assert 'make' in result
         assert 'model' in result
         assert 'transmission_type' in result
-        assert result['make'] == 'Volkswagen'
-        assert result['model'] == 'Golf'
-        assert result['transmission_type'] == 'Automatic'
+        assert result['make'] == ['Volkswagen']
+        assert result['model'] == ['Golf']
+        assert result['transmission_type'] == ['Automatic']
     
     def test_find_matching_attributes_no_matches(self, vehicle_attributes):
         """Test behavior when no attributes match."""
@@ -75,35 +75,35 @@ class TestVehicleAttributes:
         """Test matching different fuel types."""
         # Test Petrol
         result1 = vehicle_attributes.find_matching_attributes("Toyota Camry Petrol")
-        assert result1.get('fuel_type') == 'Petrol'
+        assert result1.get('fuel_type') == ['Petrol']
         
-        # Test Hybrid-Petrol
+        # Test Hybrid-Petrol (note: will also match "Petrol" substring)
         result2 = vehicle_attributes.find_matching_attributes("Toyota Camry Hybrid-Petrol")
-        assert result2.get('fuel_type') == 'Hybrid-Petrol'
+        assert set(result2.get('fuel_type')) == {'Hybrid-Petrol', 'Petrol'}
         
         # Test Diesel
         result3 = vehicle_attributes.find_matching_attributes("Volkswagen Golf Diesel")
-        assert result3.get('fuel_type') == 'Diesel'
+        assert result3.get('fuel_type') == ['Diesel']
     
     def test_find_matching_attributes_drive_types(self, vehicle_attributes):
         """Test matching different drive types."""
         # Test Front Wheel Drive
         result1 = vehicle_attributes.find_matching_attributes("Toyota Front Wheel Drive")
-        assert result1.get('drive_type') == 'Front Wheel Drive'
+        assert result1.get('drive_type') == ['Front Wheel Drive']
         
         # Test Rear Wheel Drive  
         result2 = vehicle_attributes.find_matching_attributes("BMW Rear Wheel Drive")
-        assert result2.get('drive_type') == 'Rear Wheel Drive'
+        assert result2.get('drive_type') == ['Rear Wheel Drive']
     
     def test_find_matching_attributes_transmission_types(self, vehicle_attributes):
         """Test matching transmission types."""
         # Test Automatic
         result1 = vehicle_attributes.find_matching_attributes("Automatic transmission")
-        assert result1.get('transmission_type') == 'Automatic'
+        assert result1.get('transmission_type') == ['Automatic']
         
         # Test Manual
         result2 = vehicle_attributes.find_matching_attributes("Manual gearbox")
-        assert result2.get('transmission_type') == 'Manual'
+        assert result2.get('transmission_type') == ['Manual']
     
     def test_find_matching_attributes_comprehensive_description(self, vehicle_attributes):
         """Test with a comprehensive vehicle description."""
@@ -111,27 +111,25 @@ class TestVehicleAttributes:
         result = vehicle_attributes.find_matching_attributes(description)
         
         expected = {
-            'make': 'Toyota',
-            'model': 'Camry', 
-            'fuel_type': 'Petrol',
-            'transmission_type': 'Automatic',
-            'drive_type': 'Front Wheel Drive'
+            'make': ['Toyota'],
+            'model': ['Camry'], 
+            'fuel_type': ['Petrol'],
+            'transmission_type': ['Automatic'],
+            'drive_type': ['Front Wheel Drive']
         }
         
         assert result == expected
     
     def test_find_matching_attributes_overlapping_matches(self, vehicle_attributes):
         """Test behavior when attribute values might overlap."""
-        # This tests the current implementation behavior where last match wins
-        # Note: This reveals a potential bug in the implementation
+        # This tests when description contains multiple matches for same attribute type
         description = "Petrol Hybrid-Petrol car"  # Contains both Petrol and Hybrid-Petrol
         result = vehicle_attributes.find_matching_attributes(description)
         
-        # Current implementation will only keep the last match
-        # This test documents the current behavior (which might be a bug)
+        # Should find both fuel types
         assert 'fuel_type' in result
-        # The result should be one of the fuel types, depending on iteration order
-        assert result['fuel_type'] in ['Petrol', 'Hybrid-Petrol']
+        # The result should contain both fuel types (order may vary)
+        assert set(result['fuel_type']) == {'Petrol', 'Hybrid-Petrol'}
     
     def test_find_matching_attributes_empty_description(self, vehicle_attributes):
         """Test behavior with empty description."""
@@ -147,7 +145,7 @@ class TestVehicleAttributes:
         """Test behavior with special characters in description."""
         result = vehicle_attributes.find_matching_attributes("Toyota-Camry/Petrol+Automatic")
         
-        assert result.get('make') == 'Toyota'
-        assert result.get('model') == 'Camry'
-        assert result.get('fuel_type') == 'Petrol'
-        assert result.get('transmission_type') == 'Automatic'
+        assert result.get('make') == ['Toyota']
+        assert result.get('model') == ['Camry']
+        assert result.get('fuel_type') == ['Petrol']
+        assert result.get('transmission_type') == ['Automatic']

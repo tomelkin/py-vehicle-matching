@@ -13,6 +13,7 @@ class Vehicle:
         transmission_type (str): The transmission type of the vehicle.
         fuel_type (str): The fuel type of the vehicle.
         drive_type (str): The drive type of the vehicle.
+        listing_count (int): The number of listings for this vehicle.
     """
     id: int
     make: str
@@ -21,6 +22,7 @@ class Vehicle:
     transmission_type: str
     fuel_type: str
     drive_type: str
+    listing_count: int
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Vehicle):
@@ -52,13 +54,14 @@ class Vehicle:
                     badge=row["badge"],
                     transmission_type=row["transmission_type"],
                     fuel_type=row["fuel_type"],
-                    drive_type=row["drive_type"]
+                    drive_type=row["drive_type"],
+                    listing_count=row["listing_count"]
                 )
             except KeyError as e:
                 raise ValueError(f"Missing required field in row: {e}")
         elif isinstance(row, tuple):
-            if len(row) != 7:
-                raise ValueError(f"Expected 7 fields in tuple, got {len(row)}")
+            if len(row) != 8:
+                raise ValueError(f"Expected 8 fields in tuple, got {len(row)}")
             return Vehicle(*row)
         else:
             raise ValueError(f"Unsupported row type: {type(row)}") 
