@@ -1,0 +1,19 @@
+make:
+  - name: Volkswagen
+    aliases: [VW]
+
+transmission_type:
+  - name: Automatic
+    aliases: [Auto, AT, A/T]
+  - name: Manual
+    aliases: [Man, MT, M/T]
+
+fuel_type:
+  - name: Hybrid-Petrol
+    aliases: [Hybrid, HEV]
+
+drive_type:
+  - name: Front Wheel Drive
+    aliases: [FWD, Front-wheel drive]
+  - name: Rear Wheel Drive
+    aliases: [RWD, Rear-wheel drive] 

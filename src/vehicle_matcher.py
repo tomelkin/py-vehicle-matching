@@ -2,7 +2,7 @@
 Vehicle matching functionality using VehicleAttributes and database queries.
 """
 
-from typing import List
+from typing import List, Optional
 from thefuzz import fuzz
 from vehicle import Vehicle
 from vehicle_attributes import VehicleAttributes
@@ -14,15 +14,9 @@ class VehicleMatcher:
     A class to match vehicle descriptions to vehicle records from the database.
     """
     
-    def __init__(self, db_client: DatabaseClient):
-        """
-        Initialize the VehicleMatcher with a database client.
-        
-        Args:
-            db_client: DatabaseClient instance for executing database queries
-        """
+    def __init__(self, db_client: DatabaseClient, yaml_file: Optional[str] = None):
         self.db_client = db_client
-        self.vehicle_attributes = VehicleAttributes(db_client)
+        self.vehicle_attributes = VehicleAttributes(db_client, yaml_file)
     
     def find_matching_vehicles(self, description: str) -> List[Vehicle]:
         """

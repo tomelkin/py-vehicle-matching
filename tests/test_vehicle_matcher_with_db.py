@@ -13,7 +13,7 @@ def db_client() -> DatabaseClient:
 
 @pytest.fixture(scope="module")
 def vehicle_matcher(db_client: DatabaseClient) -> VehicleMatcher:
-    return VehicleMatcher(db_client)
+    return VehicleMatcher(db_client, yaml_file="vehicle_aliases.yaml")
 
 def test_find_matching_vehicles_with_toyota_camry(vehicle_matcher: VehicleMatcher):
     matches = vehicle_matcher.find_matching_vehicles("Toyota Camry")
@@ -23,5 +23,10 @@ def test_find_matching_vehicles_with_toyota_camry(vehicle_matcher: VehicleMatche
 
 def test_find_matching_vehicles_with_vw_amarok_ultimate(vehicle_matcher: VehicleMatcher):
     matches = vehicle_matcher.find_matching_vehicles("VW Amarok Ultimate")
+
+    assert len(matches) > 0
+
+def test_find_matching_vehicles_with_vw_golf_with_toyota_engine_swap(vehicle_matcher: VehicleMatcher):
+    matches = vehicle_matcher.find_matching_vehicles("VW Golf R with engine swap from Toyota 86 GT")
 
     assert len(matches) > 0

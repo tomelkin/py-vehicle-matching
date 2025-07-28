@@ -26,8 +26,11 @@ class TestVehicleAttributes:
         assert isinstance(vehicle_attributes.attribute_values, dict)
         assert 'make' in vehicle_attributes.attribute_values
         assert 'model' in vehicle_attributes.attribute_values
-        assert 'Toyota' in vehicle_attributes.attribute_values['make']
-        assert 'Volkswagen' in vehicle_attributes.attribute_values['make']
+        
+        # Check that Toyota and Volkswagen are in the make attributes
+        make_names = [attr.name for attr in vehicle_attributes.attribute_values['make']]
+        assert 'Toyota' in make_names
+        assert 'Volkswagen' in make_names
     
     def test_find_matching_attributes_single_match(self, vehicle_attributes):
         """Test finding a single attribute match in description."""

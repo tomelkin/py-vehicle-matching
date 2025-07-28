@@ -23,7 +23,7 @@ def process_vehicle_descriptions(filename: str) -> None:
     # Initialize the vehicle matcher
     try:
         db_client = DatabaseClient()
-        matcher = VehicleMatcher(db_client)
+        matcher = VehicleMatcher(db_client, yaml_file="vehicle_aliases.yaml")
     except Exception as e:
         print(f"Error initializing vehicle matcher: {e}")
         return
