@@ -1,3 +1,5 @@
+# Problem
+
 ## Vehicle Matching Code Challenge
 
 You have been provided with a SQL script that creates two tables: `vehicle` and `listing` (`data.sql`). 
@@ -54,4 +56,85 @@ Confidence: 7
 Input: VW Golf R with engine swap from Toyota 86 GT
 Vehicle ID: 5824662093168640
 Confidence: 6
+```
+
+
+
+# Solution
+
+## Notes
+
+### Basic matching process
+
+- Check the description for matches on all known attribute values (and aliases) for: make, model, transmission type, fuel type, and drive type.
+- Pull back all vehicles matching these attributes from the database.
+- If multiple vehicles match, score them using a fuzzy matching algorithm.
+- If multiple vehicles have a joint high score, return the one with the highest listing count.
+- A confidence score out of 10 is returned, based on the number of attributes that matched. When multiple possible attribute values have matched the description, the confidence score will be reduced.
+
+## How to run
+
+### Prerequisites
+
+- Python 3.8 or higher
+- [uv](https://docs.astral.sh/uv/) package manager
+- Docker and Docker Compose (for database setup)
+
+### 1. Install Dependencies with UV
+
+Install uv if you haven't already:
+```bash
+# On macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Install project dependencies:
+```bash
+uv sync
+```
+
+### 2. Database Setup
+
+#### Option A: Using Docker (Recommended)
+
+Start the PostgreSQL database using Docker Compose:
+```bash
+docker-compose up -d
+```
+
+### 3. Environment Configuration
+
+Create a `.env` file in the project root with your PostgreSQL credentials:
+
+```bash
+# Database Configuration
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=autograb
+PGUSER=autograb_user
+PGPASSWORD=autograb_password
+```
+
+
+## Running the Application
+
+### Processing Vehicle Descriptions Files
+
+```bash
+# Using the default inputs.txt file
+uv run python src/main.py
+
+# Using a custom input file
+uv run python src/main.py path/to/your/descriptions.txt
+```
+
+
+## Running Tests
+
+### Run All Tests
+```bash
+uv run pytest
 ```
