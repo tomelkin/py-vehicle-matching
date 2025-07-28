@@ -54,15 +54,18 @@ class VehicleAttributes:
         except Exception as e:
             print(f"Error loading YAML aliases: {e}")
     
-    def find_matching_attributes(self, description: str) -> Dict[str, str]:
+    def find_matching_attributes(self, description: str) -> Dict[str, List[str]]:
         """
         Find the attributes that match the description using names and aliases.
-        Returns the canonical name for each matched attribute type.
+        Returns all matching canonical names for each matched attribute type.
         """
         matching_attributes = {}
         for attribute_type, vehicle_attributes in self.attribute_values.items():
+            matches = []
             for vehicle_attribute in vehicle_attributes:
-                if vehicle_attribute.matches(description):
-                    matching_attributes[attribute_type] = vehicle_attribute.name
-                    break
+                for term in vehicle_attribute.get_all_terms():
+                    if term.lower() in description.lower():
+                        matches.append(vehicle_attribute.name)
+            if matches:
+                matching_attributes[attribute_type] = matches
         return matching_attributes

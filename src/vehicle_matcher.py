@@ -37,9 +37,10 @@ class VehicleMatcher:
         # Construct the SQL query
         conditions = []
         params = []
-        for attribute_name, attribute_value in matched_attributes.items():
-            conditions.append(f"{attribute_name} = %s")
-            params.append(attribute_value)
+        for attribute_name, attribute_values in matched_attributes.items():
+            placeholders = ", ".join(["%s"] * len(attribute_values))
+            conditions.append(f"{attribute_name} IN ({placeholders})")
+            params.extend(attribute_values)
         where_clause = " AND ".join(conditions)
         sql = f"""
         SELECT id, make, model, badge, transmission_type, fuel_type, drive_type
