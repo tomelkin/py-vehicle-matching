@@ -22,7 +22,7 @@ class VehicleMatcher:
             db_client: DatabaseClient instance for executing database queries
         """
         self.db_client = db_client
-        self.vehicle_attributes = VehicleAttributes()
+        self.vehicle_attributes = VehicleAttributes(db_client)
     
     def find_matching_vehicles(self, description: str) -> List[Vehicle]:
         """

@@ -1,15 +1,26 @@
-from typing import Dict
+from typing import Dict, List
+from db_client import DatabaseClient
 
 class VehicleAttributes:
-    def __init__(self):
+    def __init__(self, db_client: DatabaseClient):
+        self.db_client = db_client
         self.attribute_types = ['make', 'model', 'transmission_type', 'fuel_type', 'drive_type']
-        self.attribute_values: Dict[str, list[str]] = {
-            'make': ['Toyota', 'Volkswagen'],
-            'model': ['Camry', 'Golf'],
-            'transmission_type': ['Automatic', 'Manual'],
-            'fuel_type': ['Petrol', 'Hybrid-Petrol', 'Diesel'],
-            'drive_type': ['Front Wheel Drive', 'Rear Wheel Drive']
-        }
+        self.attribute_values: Dict[str, List[str]] = {}
+        self._load_attribute_values()
+    
+    def _load_attribute_values(self) -> None:
+        """
+        Load distinct attribute values from the database for each attribute type.
+        """
+        for attribute_type in self.attribute_types:
+            try:
+                sql = f"SELECT DISTINCT {attribute_type} FROM vehicle"
+                results = self.db_client.query(sql)
+                # Extract values from the result dictionaries
+                self.attribute_values[attribute_type] = [row[attribute_type] for row in results]
+            except Exception as e:
+                print(f"Error loading {attribute_type} values: {e}")
+                self.attribute_values[attribute_type] = []
     
     def find_matching_attributes(self, description: str) -> Dict[str, list[str]]:
         """

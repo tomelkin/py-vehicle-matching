@@ -3,13 +3,8 @@ Tests for the VehicleAttributes class and find_matching_attributes function.
 """
 
 import pytest
-import sys
-import os
-
-# Add src directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
 from vehicle_attributes import VehicleAttributes
+from db_client import DatabaseClient
 
 
 class TestVehicleAttributes:
@@ -18,7 +13,8 @@ class TestVehicleAttributes:
     @pytest.fixture
     def vehicle_attributes(self):
         """Fixture providing a VehicleAttributes instance."""
-        return VehicleAttributes()
+        db_client = DatabaseClient()
+        return VehicleAttributes(db_client)
     
     def test_init_creates_proper_attributes(self, vehicle_attributes):
         """Test that initialization creates the expected attributes and values."""
